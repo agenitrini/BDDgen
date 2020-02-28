@@ -1,0 +1,6 @@
+Julien CLEMENT: Julien<dot>Clement<@>unicaen<dot>fr
+Antoine GENITRINI: Antoine<dot>Genitrini<@>lip6<dot>fr
+
+	Maintainer
+	Algorithm design and tuning
+	Distribution
