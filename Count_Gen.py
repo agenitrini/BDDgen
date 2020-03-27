@@ -38,37 +38,35 @@ def count(n, p, s):
         return memo[(n, p, s)]
     k = len(p)
     d = {}
-    if n == 0:
-        d = {tuple([0]*(k+1)): sum(p)+s}
-    else:
-        for i in range(n): # Left and right subtree of size $i$ and $n-i-1$
-            d0 = {}
-            if i == 0:
-                d0[tuple()] = sum(p)
+
+    for i in range(n): # Left and right subtree of size $i$ and $n-i-1$
+        d0 = {}
+        if i == 0:
+            d0[tuple()] = sum(p)
+        else:
+            for k0 in range(1, k): # left node has index $k_0$
+                d0.update(count(i, tuple(p[:k0]), p[k0]))
+        for l in d0:
+            w0 = d0[l]
+            d1 = {}
+            pp = list(p)
+            add(pp, l)
+            if (n-1-i == 0): # right subtree is empty
+                d1[tuple()] = sum(pp) -1
             else:
-                for k0 in range(1, k): # left node has index $k_0$
-                    d0.update(count(i, tuple(p[:k0]), p[k0]))
-            for l in d0:
-                w0 = d0[l]
-                d1 = {}
-                pp = list(p)
-                add(pp, l)
-                if (n-1-i == 0): # right subtree is empty
-                    d1[tuple()] = sum(pp) -1
-                else:
-                    for k1 in range(1, k): # right node has index $k_0$
-                        d1.update(count(n-1-i, tuple(pp[:k1]), pp[k1]))
-                for r in d1:
-                    w1 = d1[r]
-                    t = [0 for _ in range(k)]
-                    add(t, l)
-                    add(t, r)
-                    t.append(1)
-                    w = w0 * w1
-                    if n == 1:
-                        w =  w-s
-                    if w > 0:
-                        update_dict(d, tuple(t), w)
+                for k1 in range(1, k): # right node has index $k_0$
+                    d1.update(count(n-1-i, tuple(pp[:k1]), pp[k1]))
+            for r in d1:
+                w1 = d1[r]
+                t = [0 for _ in range(k)]
+                add(t, l)
+                add(t, r)
+                t.append(1)
+                w = w0 * w1
+                if n == 1:
+                    w =  w-s
+                if w > 0:
+                    update_dict(d, tuple(t), w)
 
     memo[(n, p, s)] = d
     return d
