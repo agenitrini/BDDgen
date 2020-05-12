@@ -1,0 +1,92 @@
+digraph {
+   graph [ordering=out]; node [shape=circle]; edge []; 
+subgraph{  30 [label= "X_6"]
+  30 -> 18[style=dotted] 
+  30 -> 29
+  18 [label= "X_5"]
+  18 -> 10[style=dotted] 
+  18 -> 17
+  10 [label= "X_4"]
+  10 -> 5[style=dotted] 
+  10 -> 9
+  5 [label= "X_3"]
+  5 -> 3[style=dotted] 
+  5 -> 4
+  3 [label= "X_2"]
+  3 -> 2[style=dotted] 
+  3 -> 1[color=red] 
+  2 [label= "X_1"]
+  2 -> 0[style=dotted, color=red] 
+  2 -> 1[color=red] 
+  4 [label= "X_2"]
+  4 -> 1[style=dotted, color=red] 
+  4 -> 2[color=red] 
+  9 [label= "X_3"]
+  9 -> 6[style=dotted] 
+  9 -> 8
+  6 [label= "X_2"]
+  6 -> 2[style=dotted, color=red] 
+  6 -> 0[color=red] 
+  8 [label= "X_2"]
+  8 -> 0[style=dotted, color=red] 
+  8 -> 7
+  7 [label= "X_1"]
+  7 -> 1[style=dotted, color=red] 
+  7 -> 0[color=red] 
+  17 [label= "X_4"]
+  17 -> 13[style=dotted] 
+  17 -> 16
+  13 [label= "X_3"]
+  13 -> 11[style=dotted] 
+  13 -> 12
+  11 [label= "X_2"]
+  11 -> 0[style=dotted, color=red] 
+  11 -> 1[color=red] 
+  12 [label= "X_2"]
+  12 -> 3[style=dotted, color=red] 
+  12 -> 7[color=red] 
+  16 [label= "X_3"]
+  16 -> 14[style=dotted] 
+  16 -> 15
+  14 [label= "X_2"]
+  14 -> 3[style=dotted, color=red] 
+  14 -> 0[color=red] 
+  15 [label= "X_2"]
+  15 -> 11[style=dotted, color=red] 
+  15 -> 1[color=red] 
+  29 [label= "X_5"]
+  29 -> 23[style=dotted] 
+  29 -> 28
+  23 [label= "X_4"]
+  23 -> 20[style=dotted] 
+  23 -> 22
+  20 [label= "X_3"]
+  20 -> 2[style=dotted, color=red] 
+  20 -> 19
+  19 [label= "X_2"]
+  19 -> 0[style=dotted, color=red] 
+  19 -> 2[color=red] 
+  22 [label= "X_3"]
+  22 -> 21[style=dotted] 
+  22 -> 1[color=red] 
+  21 [label= "X_2"]
+  21 -> 8[style=dotted, color=red] 
+  21 -> 1[color=red] 
+  28 [label= "X_4"]
+  28 -> 25[style=dotted] 
+  28 -> 27
+  25 [label= "X_3"]
+  25 -> 24[style=dotted] 
+  25 -> 12[color=red] 
+  24 [label= "X_2"]
+  24 -> 5[style=dotted, color=red] 
+  24 -> 0[color=red] 
+  27 [label= "X_3"]
+  27 -> 15[style=dotted, color=red] 
+  27 -> 26
+  26 [label= "X_2"]
+  26 -> 24[style=dotted, color=red] 
+  26 -> 0[color=red] 
+  0 [label= "False", shape=rectangle]
+  1 [label= "True", shape=rectangle]
+{rank = same;0;1;}{rank = same;2;7;}{rank = same;3;4;6;8;11;12;14;15;19;21;24;26;}{rank = same;5;9;13;16;20;22;25;27;}{rank = same;10;17;23;28;}{rank = same;18;29;}{rank = same;30;}}}
