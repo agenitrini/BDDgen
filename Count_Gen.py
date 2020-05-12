@@ -147,6 +147,8 @@ def decompose(rank, n, pool, target_profile):
                         return (r, i, lo_profile, hi_profile)
         i -= 1
     
+    
+    
 ##########################################################################
 def get_profile(pool):
     profile = []
@@ -172,7 +174,10 @@ def generate(rank, n, pool, target_profile):
         # bdd with left bdd of size i>0 and right bdd of size n-1-i>0
         p = pool.get_profile()
         lo_index = len(lo_profile)-1
-        D=count(i, p[:lo_index], p[lo_index])
+        if i==0:
+            D = {tuple([0]*(lo_index+1)): sum(p)}
+        else:
+            D = count(i, p[:lo_index], p[lo_index])
         max_left = D[lo_profile]
         r_left = r % max_left
         r_right = r // max_left
@@ -186,7 +191,7 @@ def generate(rank, n, pool, target_profile):
 #################################################################################
 def rand_bdd(n, k, rank = None):
     sibling_rank = 0
-    d = count(n,tuple([2]+[0]*(k-1)), 0)
+    d = count(n,tuple([2]+[0]*(k-1)), sibling_rank)
     total = sum(d.values())
     r = rank
     if r == None:
@@ -204,7 +209,7 @@ def rand_bdd(n, k, rank = None):
 ###########################################################################
 def gen_bdd(size, k):
     sibling_rank = 0
-    d = count(n,tuple([2]+[0]*(k-1)), 0)
+    d = count(size,tuple([2]+[0]*(k-1)), sibling_rank)
     for tree_profile in d:
         for rank in range(d[tree_profile]):
             pool = Pool(tree_profile) 
@@ -221,7 +226,7 @@ def printAll(n, nb_vars):
 
 
 
-## n: size of the BDD (at least 3 for True and False)
+## n: size of the BDD (at least 3 for because True and False nodes count each for 1)
 n = int(sys.argv[1])
 ## k: number of variables, the root of the BDD is labeled by x_k; x_k is an essential variable
 k = int(sys.argv[2])
@@ -245,6 +250,6 @@ print("#pool-BDD = {} (#profiles={})".format(sum(d.values()), len(d)))
 
 
 # sample uniformly at random a BDD of size n and k variables
-b = rand_bdd(n-2, k)
+#b = rand_bdd(n-2, k)
 # save the dot file corresponding to the sampled BDD
-dot_save(b.to_list(), n, k, 'rand')
+#dot_save(b.to_list(), n, k, 'rand')
