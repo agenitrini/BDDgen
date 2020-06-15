@@ -157,7 +157,6 @@ def max_profile(k):
 def max_size(k):
     return sum(max_profile(k))
 
-########################################################################
 #####################     
 def dot_from_tree(tree):
     global dot
@@ -213,9 +212,7 @@ def dot_save(t, n, k, j=''):
 
 
 
-
-
-
+########################################################################
 if __name__ == '__main__':
     k= int(sys.argv[1])
     M = max_profile(k)

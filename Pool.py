@@ -4,10 +4,11 @@ from array import array
 ######################################################
 # Auxiliary functions
 def cmp_pair(a, b):
+    ## if a >= b then return a value >= 0
     a1,a2 = a
     b1,b2 = b
     r = a1-b1
-    if r ==0:
+    if r == 0:
         r = a2-b2
     return r
 
@@ -17,10 +18,17 @@ def pair_to_rank(i, j, M):
     return R
 
 def rank_to_pair(r, M):
-    R = r+(r//M)+1
-    i = R//M
-    j = R % M
+#    R = r+(r//M)+1
+#    i = R//M
+#    j = R % M
+#    return (i, j)
+    i = r // M
+    j = r % M + i + 1
+    if j >= M:
+        j = j % M
+        i += 1
     return (i, j)
+    
 #################################################
 # Class Pool
 class Pool:
@@ -179,6 +187,7 @@ class Pool:
 
     def unrank_pair(self, rank, level):
         M = sum(self.profile[:level])
+      #  print(self.profile[:level], self.node)
         shift = 0
         previous_shift = 0
         r = rank
@@ -190,6 +199,7 @@ class Pool:
                 (k, l) = (self.get_rank(lo), self.get_rank(hi))
 #                print("** trying pair: r={} {}->{} pos={} node={}".format(r, (i, j),(k, l), pos, self.node))
                 if cmp_pair((i, j), (k, l)) >= 0:
+                    # thus (i, j) >= (k, l)
                     shift += 1
                 else:
                     break
@@ -199,4 +209,20 @@ class Pool:
             else:
                 break
 #        print("** done : pair={} r={} shift={}".format(pair, rank, shift))
+#        r = rank
+#        i, j = rank_to_pair(r, M)
+#        s = self.offset[level]
+#        i_node = self.rank[s]
+#        local_rank, level, lo, hi = self.get_node(i_node)
+#        (k, l) = (self.get_rank(lo), self.get_rank(hi))
+#        while s < self.offset[level+1] and cmp_pair((i, j), (k, l))>=0:  # no lookup outside the list because no such call for the root
+#            r += 1
+#            (i, j) = rank_to_pair(r, M)
+#            s += 1
+#            i_node = self.rank[s]
+#            local_rank, level, lo, hi = self.get_node(i_node)
+#            (k, l) = (self.get_rank(lo), self.get_rank(hi))
+        
+        print(i, j)
+        
         return (self.get_nth(i), self.get_nth(j))
