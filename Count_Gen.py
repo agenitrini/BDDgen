@@ -203,9 +203,10 @@ if n > MAX_SIZE[k]:
 d = count(n, tuple([0]*(k-1)), 0)
 for t,w in sorted(d):
     print("# {} : {}".format(t,w))
-print("# =========================")
-printAll(n, k)
-print("#BDD = {} (#profiles={})".format(sum([w for _, w in d]), len(d)))
+
+#print("# =========================")
+#printAll(n, k)
+#print("#BDD = {} (#profiles={})".format(sum([w for _, w in d]), len(d)))
      
 # sample uniformly at random a BDD of size n and k variables
 b = rand_bdd(n, k)
