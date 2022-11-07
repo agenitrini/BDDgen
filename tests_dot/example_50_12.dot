@@ -1,0 +1,223 @@
+#maximum size (12 vars): 767
+#BDDs = 450322444948030040163680796272343570642942634207088803179608358267101662254349077120, size 50 with 12 vars
+#********* rank = 95855678484119783408986927162730281416427475161962930130690899684890273546324148295 **************
+# r=95855678484119783408986927162730281416427475161962930130690899684890273546324148295 / 450322444948030040163680796272343570642942634207088803179608358267101662254349077120
+# ROBDD: [(12, (15, 1)), (11, (7, 2)), (9, (6, 3)), (8, (4, -44)), (6, (5, -20)), (5, (-40, -44)), (5, (-28, -40)), (10, (12, 8)), (8, (10, 9)), (7, (-25, -42)), (7, (11, -31)), (6, (-23, -20)), (8, (14, 13)), (7, (-45, -35)), (6, (-27, -32)), (11, (21, 16)), (10, (18, 17)), (8, (-49, -41)), (7, (19, -48)), (6, (20, -38)), (4, (-41, -42)), (10, (33, 22)), (9, (24, 23)), (5, (-27, -36)), (8, (29, 25)), (6, (-31, 26)), (5, (-42, 27)), (4, (-46, 28)), (3, (-49, -42)), (5, (32, 30)), (4, (-44, 31)), (3, (-47, -42)), (4, (-39, -42)), (7, (43, 34)), (6, (37, 35)), (5, (-43, 36)), (2, (-49, -48)), (5, (40, 38)), (4, (-46, 39)), (3, (-45, -42)), (4, (-49, 41)), (3, (42, -47)), (2, (-47, -49)), (4, (45, 44)), (3, (-48, -47)), (2, (47, 46)), (1, (-48, -49)), (1, (-49, -48)), (0, (None, None)), (0, (None, None))]
+# profile=(1, 2, 3, 2, 5, 5, 6, 7, 7, 5, 3, 2, 2)
+# cache count_multi_BDDs: CacheInfo(hits=30, misses=537, maxsize=None, currsize=537)
+# cache R: CacheInfo(hits=1294469, misses=596, maxsize=None, currsize=596)
+digraph G {
+rankdir=TB;
+newrank=new;
+
+ordering="out";
+
+nodesep=0.2;
+ranksep=.2;
+margin=0;
+node [shape=circle,style="",color="black",margin=0.001,height=0.05,width=0.05,
+label="",
+penwidth=1.5,
+fontsize=12]
+edge [arrowsize=.5];
+L0 [label="Layer 0", style=invis,shape=none]
+L1 [label="Layer 1", style=invis,shape=none]
+L2 [label="Layer 2", style=invis,shape=none]
+L3 [label="Layer 3", style=invis,shape=none]
+L4 [label="Layer 4", style=invis,shape=none]
+L5 [label="Layer 5", style=invis,shape=none]
+L6 [label="Layer 6", style=invis,shape=none]
+L7 [label="Layer 7", style=invis,shape=none]
+L8 [label="Layer 8", style=invis,shape=none]
+L9 [label="Layer 9", style=invis,shape=none]
+L10 [label="Layer 10", style=invis,shape=none]
+L11 [label="Layer 11", style=invis,shape=none]
+L12 [label="Layer 12", style=invis,shape=none]
+L1 -> L0 [style=invis; minlen=2]
+L2 -> L1 [style=invis; minlen=2]
+L3 -> L2 [style=invis; minlen=2]
+L4 -> L3 [style=invis; minlen=2]
+L5 -> L4 [style=invis; minlen=2]
+L6 -> L5 [style=invis; minlen=2]
+L7 -> L6 [style=invis; minlen=2]
+L8 -> L7 [style=invis; minlen=2]
+L9 -> L8 [style=invis; minlen=2]
+L10 -> L9 [style=invis; minlen=2]
+L11 -> L10 [style=invis; minlen=2]
+L12 -> L11 [style=invis; minlen=2]
+subgraph{
+t0 [label="0", constraint=false, color=black, fontcolor=black]
+t15 [label="15", constraint=false, color=black, fontcolor=black]
+t21 [label="21", constraint=false, color=black, fontcolor=black]
+t33 [label="33", constraint=false, color=black, fontcolor=black]
+t43 [label="43", constraint=false, color=black, fontcolor=black]
+t45 [label="45", constraint=false, color=black, fontcolor=black]
+t47 [label="47", constraint=false, color=black, fontcolor=black]
+t47:sw -> t49 [style=dotted, color=red, constraint=true]
+t47:se -> t48 [style=filled, color=red, constraint=true]
+t45:sw -> t47 [style=dotted, color=black, constraint=true]
+t46 [label="46", constraint=false, color=black, fontcolor=black]
+t46:sw -> t48 [style=dotted, color=red, constraint=true]
+t46:se -> t49 [style=filled, color=red, constraint=true]
+t45:se -> t46 [style=filled, color=black, constraint=true]
+t43:sw -> t45 [style=dotted, color=black, constraint=true]
+t44 [label="44", constraint=false, color=black, fontcolor=black]
+t44:sw -> t48 [style=dotted, color=red, constraint=true]
+t44:se -> t47 [style=filled, color=red, constraint=true]
+t43:se -> t44 [style=filled, color=black, constraint=true]
+t33:sw -> t43 [style=dotted, color=black, constraint=true]
+t34 [label="34", constraint=false, color=black, fontcolor=black]
+t37 [label="37", constraint=false, color=black, fontcolor=black]
+t40 [label="40", constraint=false, color=black, fontcolor=black]
+t40:sw -> t49 [style=dotted, color=red, constraint=true]
+t41 [label="41", constraint=false, color=black, fontcolor=black]
+t42 [label="42", constraint=false, color=black, fontcolor=black]
+t42:sw -> t47 [style=dotted, color=red, constraint=true]
+t42:se -> t49 [style=filled, color=red, constraint=true]
+t41:sw -> t42 [style=dotted, color=black, constraint=true]
+t41:se -> t47 [style=filled, color=red, constraint=true]
+t40:se -> t41 [style=filled, color=black, constraint=true]
+t37:sw -> t40 [style=dotted, color=black, constraint=true]
+t38 [label="38", constraint=false, color=black, fontcolor=black]
+t38:sw -> t46 [style=dotted, color=red, constraint=true]
+t39 [label="39", constraint=false, color=black, fontcolor=black]
+t39:sw -> t45 [style=dotted, color=red, constraint=true]
+t39:se -> t42 [style=filled, color=red, constraint=true]
+t38:se -> t39 [style=filled, color=black, constraint=true]
+t37:se -> t38 [style=filled, color=black, constraint=true]
+t34:sw -> t37 [style=dotted, color=black, constraint=true]
+t35 [label="35", constraint=false, color=black, fontcolor=black]
+t35:sw -> t43 [style=dotted, color=red, constraint=true]
+t36 [label="36", constraint=false, color=black, fontcolor=black]
+t36:sw -> t49 [style=dotted, color=red, constraint=true]
+t36:se -> t48 [style=filled, color=red, constraint=true]
+t35:se -> t36 [style=filled, color=black, constraint=true]
+t34:se -> t35 [style=filled, color=black, constraint=true]
+t33:se -> t34 [style=filled, color=black, constraint=true]
+t21:sw -> t33 [style=dotted, color=black, constraint=true]
+t22 [label="22", constraint=false, color=black, fontcolor=black]
+t24 [label="24", constraint=false, color=black, fontcolor=black]
+t29 [label="29", constraint=false, color=black, fontcolor=black]
+t32 [label="32", constraint=false, color=black, fontcolor=black]
+t32:sw -> t39 [style=dotted, color=red, constraint=true]
+t32:se -> t42 [style=filled, color=red, constraint=true]
+t29:sw -> t32 [style=dotted, color=black, constraint=true]
+t30 [label="30", constraint=false, color=black, fontcolor=black]
+t30:sw -> t44 [style=dotted, color=red, constraint=true]
+t31 [label="31", constraint=false, color=black, fontcolor=black]
+t31:sw -> t47 [style=dotted, color=red, constraint=true]
+t31:se -> t42 [style=filled, color=red, constraint=true]
+t30:se -> t31 [style=filled, color=black, constraint=true]
+t29:se -> t30 [style=filled, color=black, constraint=true]
+t24:sw -> t29 [style=dotted, color=black, constraint=true]
+t25 [label="25", constraint=false, color=black, fontcolor=black]
+t25:sw -> t31 [style=dotted, color=red, constraint=true]
+t26 [label="26", constraint=false, color=black, fontcolor=black]
+t26:sw -> t42 [style=dotted, color=red, constraint=true]
+t27 [label="27", constraint=false, color=black, fontcolor=black]
+t27:sw -> t46 [style=dotted, color=red, constraint=true]
+t28 [label="28", constraint=false, color=black, fontcolor=black]
+t28:sw -> t49 [style=dotted, color=red, constraint=true]
+t28:se -> t42 [style=filled, color=red, constraint=true]
+t27:se -> t28 [style=filled, color=black, constraint=true]
+t26:se -> t27 [style=filled, color=black, constraint=true]
+t25:se -> t26 [style=filled, color=black, constraint=true]
+t24:se -> t25 [style=filled, color=black, constraint=true]
+t22:sw -> t24 [style=dotted, color=black, constraint=true]
+t23 [label="23", constraint=false, color=black, fontcolor=black]
+t23:sw -> t27 [style=dotted, color=red, constraint=true]
+t23:se -> t36 [style=filled, color=red, constraint=true]
+t22:se -> t23 [style=filled, color=black, constraint=true]
+t21:se -> t22 [style=filled, color=black, constraint=true]
+t15:sw -> t21 [style=dotted, color=black, constraint=true]
+t16 [label="16", constraint=false, color=black, fontcolor=black]
+t18 [label="18", constraint=false, color=black, fontcolor=black]
+t19 [label="19", constraint=false, color=black, fontcolor=black]
+t20 [label="20", constraint=false, color=black, fontcolor=black]
+t20:sw -> t41 [style=dotted, color=red, constraint=true]
+t20:se -> t42 [style=filled, color=red, constraint=true]
+t19:sw -> t20 [style=dotted, color=black, constraint=true]
+t19:se -> t38 [style=filled, color=red, constraint=true]
+t18:sw -> t19 [style=dotted, color=black, constraint=true]
+t18:se -> t48 [style=filled, color=red, constraint=true]
+t16:sw -> t18 [style=dotted, color=black, constraint=true]
+t17 [label="17", constraint=false, color=black, fontcolor=black]
+t17:sw -> t49 [style=dotted, color=red, constraint=true]
+t17:se -> t41 [style=filled, color=red, constraint=true]
+t16:se -> t17 [style=filled, color=black, constraint=true]
+t15:se -> t16 [style=filled, color=black, constraint=true]
+t0:sw -> t15 [style=dotted, color=black, constraint=true]
+t1 [label="1", constraint=false, color=black, fontcolor=black]
+t7 [label="7", constraint=false, color=black, fontcolor=black]
+t12 [label="12", constraint=false, color=black, fontcolor=black]
+t14 [label="14", constraint=false, color=black, fontcolor=black]
+t14:sw -> t27 [style=dotted, color=red, constraint=true]
+t14:se -> t32 [style=filled, color=red, constraint=true]
+t12:sw -> t14 [style=dotted, color=black, constraint=true]
+t13 [label="13", constraint=false, color=black, fontcolor=black]
+t13:sw -> t45 [style=dotted, color=red, constraint=true]
+t13:se -> t35 [style=filled, color=red, constraint=true]
+t12:se -> t13 [style=filled, color=black, constraint=true]
+t7:sw -> t12 [style=dotted, color=black, constraint=true]
+t8 [label="8", constraint=false, color=black, fontcolor=black]
+t10 [label="10", constraint=false, color=black, fontcolor=black]
+t11 [label="11", constraint=false, color=black, fontcolor=black]
+t11:sw -> t23 [style=dotted, color=red, constraint=true]
+t11:se -> t20 [style=filled, color=red, constraint=true]
+t10:sw -> t11 [style=dotted, color=black, constraint=true]
+t10:se -> t31 [style=filled, color=red, constraint=true]
+t8:sw -> t10 [style=dotted, color=black, constraint=true]
+t9 [label="9", constraint=false, color=black, fontcolor=black]
+t9:sw -> t25 [style=dotted, color=red, constraint=true]
+t9:se -> t42 [style=filled, color=red, constraint=true]
+t8:se -> t9 [style=filled, color=black, constraint=true]
+t7:se -> t8 [style=filled, color=black, constraint=true]
+t1:sw -> t7 [style=dotted, color=black, constraint=true]
+t2 [label="2", constraint=false, color=black, fontcolor=black]
+t6 [label="6", constraint=false, color=black, fontcolor=black]
+t6:sw -> t28 [style=dotted, color=red, constraint=true]
+t6:se -> t40 [style=filled, color=red, constraint=true]
+t2:sw -> t6 [style=dotted, color=black, constraint=true]
+t3 [label="3", constraint=false, color=black, fontcolor=black]
+t4 [label="4", constraint=false, color=black, fontcolor=black]
+t5 [label="5", constraint=false, color=black, fontcolor=black]
+t5:sw -> t40 [style=dotted, color=red, constraint=true]
+t5:se -> t44 [style=filled, color=red, constraint=true]
+t4:sw -> t5 [style=dotted, color=black, constraint=true]
+t4:se -> t20 [style=filled, color=red, constraint=true]
+t3:sw -> t4 [style=dotted, color=black, constraint=true]
+t3:se -> t44 [style=filled, color=red, constraint=true]
+t2:se -> t3 [style=filled, color=black, constraint=true]
+t1:se -> t2 [style=filled, color=black, constraint=true]
+t0:se -> t1 [style=filled, color=black, constraint=true]
+t49 [label="⊥",margin=0.03, shape = box, constraint=true]
+t48 [label="⊤", margin=0.03, shape = box, constraint=true]
+}
+{rank=same; L0-> t49-> t48 [style= invis, constraint=true];
+}
+{rank=same; L1-> t47-> t46 [style= invis, constraint=true];
+}
+{rank=same; L2-> t45-> t42-> t36 [style= invis, constraint=true];
+}
+{rank=same; L3-> t44-> t41-> t39-> t31-> t28 [style= invis, constraint=true];
+}
+{rank=same; L4-> t43-> t40-> t38-> t32-> t30-> t27-> t20 [style= invis, constraint=true];
+}
+{rank=same; L5-> t37-> t35-> t29-> t26-> t23-> t6-> t5 [style= invis, constraint=true];
+}
+{rank=same; L6-> t34-> t25-> t19-> t14-> t11-> t4 [style= invis, constraint=true];
+}
+{rank=same; L7-> t33-> t18-> t13-> t10-> t9 [style= invis, constraint=true];
+}
+{rank=same; L8-> t24-> t17-> t12-> t8-> t3 [style= invis, constraint=true];
+}
+{rank=same; L9-> t22-> t2 [style= invis, constraint=true];
+}
+{rank=same; L10-> t21-> t16-> t7 [style= invis, constraint=true];
+}
+{rank=same; L11-> t15-> t1 [style= invis, constraint=true];
+}
+{rank=same; L12-> t0 [style= invis, constraint=true];
+}
+}
+
