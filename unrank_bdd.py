@@ -30,29 +30,6 @@ def to_TT(L):
                 bead[i_node] = lo_bead * (2**d0) +hi_bead*(2**d1)
     return bead[0]
 ###################################
-def truth_table(L):
-    """
-    return the truth table of the BDD L; node : n-2 -> True and n-1 -> False
-    """
-    T = dict()
-    i = 0
-    for a in L[:-2]:
-        T[i] = (a[0], abs(a[1][0]), abs(a[1][1]))
-        i += 1
-    i -= 1
-    T[i+1] = (0,)
-    T[i+2] = (0,)
-
-    TT = dict()
-    TT[i+1] = [True]
-    TT[i+2] = [False]
-    while i>=0:
-        TT[i] = TT[T[i][1]]*(2**(T[i][0] - T[T[i][1]][0] - 1)) + TT[T[i][2]]*(2**(T[i][0] - T[T[i][2]][0] - 1))
-        if len(TT[i]) != 2**(T[i][0]):
-            print('pb ', i, L)
-        i -= 1
-    return TT[0]
-###########################
 def getProfile(L):
     x = []
     for l, _ in L:
@@ -61,6 +38,46 @@ def getProfile(L):
     for i in x:
         p[i] += 1
     return tuple(p[::-1])
+###################################
+def is_terminal(n):
+    return n is None or n < 0 # or n >= len(L)-2 ?
+######################
+def weight(L):
+    """ returns the weight of the profile and
+    the list the one of each node that is terminal, in the inorder traversal"""
+    p = getProfile(L)
+    w = 1
+    D = []
+    S = []
+    current = 0
+    pool = [0 for _ in range(len(p))]
+    pool[0] = 2
+    while len(S) > 0 or not is_terminal(current): # postorder traversal
+        if not is_terminal(current):  # if current is not a leaf
+            S.append(current)
+            level, delta = L[current]
+            lo, hi = delta
+            current = lo
+        else:
+            i_node = S.pop()
+            level, delta = L[i_node]
+            lo, hi = delta
+            M = sum(pool[:level])
+            if is_terminal(lo):
+                if is_terminal(hi):
+                    res = (M*(M-1) - pool[level])
+                    w *= res
+                    D.append(res)
+                else:
+                    w *= M
+                    D.append(M)
+            elif is_terminal(hi):
+                w *= M - 1
+                D.append(M - 1)
+            pool[level] += 1 # current node is not new and belongs to the pool
+            current = hi
+    D.reverse()
+    return w, D
 ###########################
 def to_dot(L, k, max_level=None):
     if max_level is None:
@@ -91,7 +108,7 @@ def to_dot(L, k, max_level=None):
             level_child, _ = L[abs(lo)]
             if level> max_level and level_child<= max_level: color = multi_color
             if level> max_level and level_child> max_level: color = background_color
-            
+
             s += "{}:sw -> {} [style=dotted, color={}, constraint={}]\n".format(id,  id0, color, constraint)
             #mid = "m{}".format(root)
             #s +="{} [label=\" \", style=invis]\n{} -> {} [style=invis]\n".format(mid,id, mid)
@@ -147,6 +164,7 @@ def pair_to_rank(i, j, M):
     """
     return the rank of (i, j) in {(i, j) : 0 <= i, j < M and i neq j}
     lex order
+    (unused)
     """
     r = i*M+j
     R = r-1- ((r-1)//(M+1))
@@ -184,7 +202,14 @@ def remove_empty_levels(p, a):
     A = tuple(x -offset[x] for x in a)
     return tuple(q), A
 #####################################
-
+def spine_rank_to_rank_list(L, r):
+    _, D = weight(L)
+    Dr = []
+    for d in D:
+        Dr.append(r % d)
+        r //= d
+    return Dr
+#####################################
 def adjust(L, D, p):
     """
     Adjust relative pointers to the pool
@@ -193,8 +218,6 @@ def adjust(L, D, p):
     profile in order (p_0=2, ..., p_k=1)
     """
     ### HELPER FUNCTIONS: current pool and final profile are known
-    def is_terminal(n):
-        return n is None or n < 0 or n >= len(L)-2
     ##########
     def rank2node(r): #, pool, profile):
         """
@@ -216,27 +239,26 @@ def adjust(L, D, p):
         """
         level, _ = L[i_node]
         r = sum([len(pool[i]) for i in range(level)])
-        #print("#i_node={} pool={} rank={}".format(i_node, pool[level], bisect.bisect_left(pool[level], -i_node)))
-
         return r+bisect.bisect_left(pool[level], -i_node)
     #########
-    def unrank_leaf(r, M,  P):
-        rel = []
-        for lo, hi in P:
-            lo, hi = -lo, -hi
-            i, j = node2rank(lo), node2rank(hi)
-            R = pair_to_rank(i, j, M)
-            rel.append(R)
-        rel.sort()
+    def node2absrank(i_node):
+        """
+        returns the absolute rank of node of index i_node in L relatively to the set of all nodes
+        """
+        level, _ = L[i_node]
+        r = sum(p[:level])
+        return r+bisect.bisect_left(pool[level], -i_node)
+    #########
+    def unrank_leaf(r, M, absolute_pairs):
         shift = 0
-    
         while True:
-          R = bisect.bisect(rel, r+shift) # R = #values(rel) <= r
-          if shift == R:
-              break
-          shift =  R 
-        i, j = rank_to_pair(r+shift, M)
-        lo, hi  = rank2node(i), rank2node(j)
+            i, j = rank_to_pair(r+shift, M)
+            lo, hi = rank2node(i), rank2node(j)
+            I, J = node2absrank(lo), node2absrank(hi)
+            R = bisect.bisect(absolute_pairs, (I, J))
+            if shift == R:
+                break
+            shift =  R
         return (-lo, -hi)
     #########
     # add constants
@@ -245,7 +267,8 @@ def adjust(L, D, p):
     we store -i_node in pool and (-lo, -hi) in pairs
     (used for algorithm bisect of python which need data to be sorted in INCREASING order, a bit lame)
     """
-    pairs= [[] for _ in range(k+1)]
+    # pairs= [[] for _ in range(k+1)]
+    abs_pairs= [[] for _ in range(k+1)]
     pool = [[] for _ in range(k+1)]
     i_True = len(L)
     L.append((0,(None, None))) # True
@@ -270,8 +293,7 @@ def adjust(L, D, p):
                 #assert(x== i_node)
                 if hi == None:
                     M =sum([len(pool[i]) for i in range(level)])
-                    lo, hi = unrank_leaf(r, M, pairs[level])
-                    assert((lo, hi) not in pairs[level])
+                    lo, hi = unrank_leaf(r, M, abs_pairs[level])
                 else:
                     lo = -rank2node(r)
             elif hi == None:
@@ -283,7 +305,9 @@ def adjust(L, D, p):
             delta = lo, hi
             L[i_node] = level, delta
             i_node = hi
-            pairs[level].append((-abs(delta[0]), -abs(delta[1])))  # we store pairs (-lo, -hi) in P
+            I, J = node2absrank(abs(lo)), node2absrank(abs(hi))
+            assert((I, J) not in abs_pairs[level])
+            bisect.insort(abs_pairs[level], (I, J))  # we store pairs of aboslute indices (order is breadth first left to right)
 ##########################################################
 def unrank_bdd_from_profile(r, p):
     L, D = unrank_bdd_from_profile_incomplete(r, p)
@@ -365,7 +389,7 @@ if __name__ == '__main__':
         n = int(sys.argv[1])
         nb_vars = int(sys.argv[2])
         max_level = int(sys.argv[4])
-        
+
     total = bdd.count(n, nb_vars)
     print("#maximum size ({} vars): {}".format(nb_vars, bdd.max_size(nb_vars)))
     print("#BDDs = {}, size {} with {} vars".format(total, n, nb_vars))
@@ -379,8 +403,8 @@ if __name__ == '__main__':
     L = unrank_bdd(r, n, nb_vars)
     print("# ROBDD: {}".format(L))
     print("# profile={}".format(getProfile(L)))
-    #    print("# pretty tree representation=\n"+pt.drawTree2(True)(True)(ns.get_tree(ns.root)))
-    #    print("# weight={}".format(ns.weight()))
+    #print("# truth table=\"{}\"".format(to_TT(L)))
+    print("# detailed weight={}".format(weight(L)))
     print("# cache count_multi_BDDs: {}".format(bdd.count_multi_BDDs.cache_info()))
     print("# cache R: {}".format(bdd.R.cache_info()))
     print("{}".format(to_dot(L, nb_vars, max_level)))
