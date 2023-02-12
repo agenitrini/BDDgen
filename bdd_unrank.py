@@ -4,7 +4,14 @@ import sys as sys
 import time
 import random as random
 import bisect as bisect
-import bdd_func as bdd
+import bdd_func_minimal as bdd
+import functools
+from math import ceil, sqrt
+from poly_func import add
+from itertools import zip_longest
+
+from timeit import default_timer as timer
+dot = True
 ###################################
 def to_TT(L):
     """
@@ -177,17 +184,6 @@ def multi_profile(a):
     for x in a:
         m[x] += 1
     return tuple(m)
-###########################
-def count_multi_BDDs(p, a):
-    """
-    in module bdd profiles are (p_k, ..., p_1)
-    Here we use (p_0=2, p_1, ..., p_k)
-    """
-    p, a  = remove_empty_levels(p, a)
-    #print(p, a)
-    m = multi_profile(a)
-    res =  bdd.count_multi_BDDs(tuple(p[:0:-1])+(0,),m[::-1])
-    return res
 ##########################################################
 def remove_empty_levels(p, a):
     q = []
@@ -313,7 +309,7 @@ def unrank_bdd_from_profile(r, p):
     L, D = unrank_bdd_from_profile_incomplete(r, p)
     adjust(L, D, p)# all nodes have been distributed, we can unrank edges correctly
     return L
-
+##########################################################
 def unrank_bdd_from_profile_incomplete(r, p):
     L = []
     k = len(p)-1
@@ -327,7 +323,7 @@ def unrank_bdd_from_profile_incomplete(r, p):
             l -= 1
         if l > 0:
             q = tuple(p[:l])+(p[l]-1,)+p[l+1:]
-            Delta = count_multi_BDDs(q, E + (l-1, l-1)) - count_multi_BDDs(q, E + (l-1,)) - (p[l] - 1)* count_multi_BDDs(q, E)
+            Delta = count_anchored_extensions(q, E + (l-1, l-1)) - count_anchored_extensions(q, E + (l-1,)) - (p[l] - 1)* count_anchored_extensions(q, E)
             if r - Delta < 0: #create a node at level next_level
                 i_node = len(L) # index of node to be created
                 L.append((l, (None, None)))
@@ -349,7 +345,7 @@ def unrank_bdd_from_profile_incomplete(r, p):
             w = sum(p[:level])
             if kid == 1:
                 nb_choices = w*(w-1) - p[level]
-                Delta = nb_choices * count_multi_BDDs(p, E[:-1]) # how many considering the current node is a leaf?
+                Delta = nb_choices * count_anchored_extensions(p, E[:-1]) # how many considering the current node is a leaf?
                 if r - Delta < 0:
                     D.append(r % nb_choices)
                     r = r // nb_choices
@@ -364,34 +360,129 @@ def unrank_bdd_from_profile_incomplete(r, p):
             r //= nb_choices
     return L, D
 ###########################
+def complete_profile(p, n, k):
+    P = (0,1)
+    for x in p:
+        # if x > 0: # does not happen often, not worth the test
+        P = iter(x, P)
+    bottom = n - sum(p)
+    #print("p ={} P={} n={} k={} bottom={}".format(p, P, n, k, bottom))
+    r = 0
+    for d, c in enumerate(P):
+        if c != 0:
+            count = bdd.expand_monomial(n, d, k-len(p))
+            #print("c={} d={}\t{}".format(c, d, count))
+            if len(count) > bottom:
+                r += c*count[bottom]
+    return r
+##########################
+def unrank_profile(rank,  n, nb_vars):
+    r = rank
+    p =()
+    for k in range(nb_vars):
+        top = sum(p)
+        bottom = n - top
+        for m in range(1 +min(top+1, bottom-ceil(sqrt(bottom)))):
+            Delta = complete_profile(p+(m,), n, nb_vars)
+            if r - Delta  < 0 :
+                p = p +(m,)
+                break
+            r -= Delta
+    return r, p
+########################
+########################################
+def calc(p, m):
+    """
+    p is an incomplete profile
+    a is the profile of the multiset entries
+    return: a polynomial in Z[X]
+    caution: profile p is incomplete (without the last value 2 for constants
+    """
+    P = (1,)
+    for x, y in zip_longest(p, m, fillvalue=0): # padding if needed
+        P = iter(x, (0,)*y + P)
+    return P
+########################################
+#@functools.lru_cache(maxsize=None)
+def count_multi_BDDs(p, m):
+    """
+    p is a incomplete profile (without the constants level)
+    """
+    s = calc(p, m)
+    return eval(s)
+###########################
+#@functools.lru_cache(maxsize=None)
+def count_anchored_extensions(p, a):
+    """
+    in module bdd: profiles are (p_k, ..., p_1)
+    Here we use (p_0=2, p_1, ..., p_k) and use an anchor list instead of anchor profile
+    this is a "wrapper" around count_multi_BDDs for unranking
+    """
+    p, a  = remove_empty_levels(p, a)
+    m = multi_profile(a)
+    res =  count_multi_BDDs(tuple(p[:0:-1])+(0,),m[::-1])
+    return res
+###############################
+#@functools.lru_cache(maxsize=None)
+def eval(P):
+    i = 1
+    s = 0
+    for x in P:
+        s += i*x
+        i *= 2
+    return s
+###############################
+#@functools.lru_cache(maxsize=None)
+def iter(x, P):
+    """
+    x integer (number of nodes)
+    P polynomial in Z[x]
+    """
+    Q = tuple()
+    for k in range(x, len(P)):
+        coeff = P[k]
+        #        if coeff != 0: # does not happen often, not worth the test
+        Q = add(Q,  tuple(coeff*x for x in bdd._R(x, k)))
+    return Q
+################################
 def unrank_bdd(rank, size, nb_vars, essential=False):
     """
     return the BDD with rank among BDDs of size with nb_vars
     """
     r = rank
-    r, p = bdd.unrank_profile(rank, size, nb_vars)
+    start = timer()
+    r, p = unrank_profile(rank, size, nb_vars)
+    end = timer()
+    print("#time unranking profile: {} s".format(end - start), flush=True)
     p = (2,)+p[::-1] # translate to have (p_0=2, p_1, ..., p_k)
+    start = timer()
     L =  unrank_bdd_from_profile(r, p)
+    end = timer()
+    print("#time unranking BDD from profile: {} s".format(end - start), flush=True)
     return L
 #####################################
 if __name__ == '__main__':
     max_level = None
+    nb_vars = int(sys.argv[1])
+    n = int(sys.argv[2])
     if len(sys.argv) == 3:
-        n = int(sys.argv[1])
-        nb_vars = int(sys.argv[2])
         r = None
     elif len(sys.argv) == 4:
         r = int(sys.argv[3])
-        n = int(sys.argv[1])
-        nb_vars = int(sys.argv[2])
     elif len(sys.argv) == 5:
         r = int(sys.argv[3])
-        n = int(sys.argv[1])
-        nb_vars = int(sys.argv[2])
         max_level = int(sys.argv[4])
-
-    total = bdd.count(n, nb_vars)
+    else:
+        print("usage: python3 unrank_bdd nb_vars size [rank [max_level]]\n# rank optional, max_level used only for dot output")
+    if n > bdd.max_size(nb_vars):
+        print(" size too big !!! setting to {}".format( bdd.max_size(nb_vars)))
+        n = bdd.max_size(nb_vars)
     print("#maximum size ({} vars): {}".format(nb_vars, bdd.max_size(nb_vars)))
+    bdd.init(n, nb_vars)
+    start = timer()
+    total = bdd.expand_monomial(n, 1, nb_vars)
+    total = sum(total)
+    print("# precomputation step: {} s".format(timer()-start))
     print("#BDDs = {}, size {} with {} vars".format(total, n, nb_vars))
     if total == 0:
         print("No BDD!")
@@ -400,11 +491,15 @@ if __name__ == '__main__':
         r = random.randint(0, total-1) # 0<= r <= total-1
     print("#********* rank = {} **************".format(r))
     print("# r={} / {}".format(r, total))
+    assert(r<total)
     L = unrank_bdd(r, n, nb_vars)
+    if dot:
+        print("{}".format(to_dot(L, nb_vars, max_level)))
     print("# ROBDD: {}".format(L))
     print("# profile={}".format(getProfile(L)))
     #print("# truth table=\"{}\"".format(to_TT(L)))
     print("# detailed weight={}".format(weight(L)))
-    print("# cache count_multi_BDDs: {}".format(bdd.count_multi_BDDs.cache_info()))
-    print("# cache R: {}".format(bdd.R.cache_info()))
-    print("{}".format(to_dot(L, nb_vars, max_level)))
+#    print("# cache count_anchored_extensions: {}".format(count_anchored_extensions.cache_info()))
+    
+    print("# cache expand_monomial: {}".format(bdd.expand_monomial.cache_info()))
+    print("# cache R: {}".format(bdd._R.cache_info()))

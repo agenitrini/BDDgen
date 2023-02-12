@@ -20,7 +20,7 @@ The python code can be interpreted with pypy3 to be more efficient (but python3 
 In order to compute the distibution of the Boolean functions in 8 variables according to their ROBDD size, we call :
 
 ```
-pypy3 bdd_func.py 8
+pypy3 bdd_func_minimal.py 8
 ```
 
 With a personal computer to compute the distribution for 12 variables we will need a couple of hours.
@@ -28,7 +28,7 @@ With a personal computer to compute the distribution for 12 variables we will ne
 In order to sample uniformly at random a ROBDD in 12 variables and with size 50, we call:
 
 ```
-pypy3 unrank_bdd.py 50 12
+pypy3 bdd_unrank.py 50 12
 ```
 
 We can directly redirect the output in a .dot file in order to print it with graphviz (see the tests_dot directory).
