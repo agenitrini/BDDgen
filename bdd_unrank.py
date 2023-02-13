@@ -359,37 +359,29 @@ def unrank_bdd_from_profile_incomplete(r, p):
             D.append(r % nb_choices)
             r //= nb_choices
     return L, D
-###########################
-def complete_profile(p, n, k):
-    P = (0,1)
-    for x in p:
-        # if x > 0: # does not happen often, not worth the test
-        P = iter(x, P)
-    bottom = n - sum(p)
-    #print("p ={} P={} n={} k={} bottom={}".format(p, P, n, k, bottom))
-    r = 0
-    for d, c in enumerate(P):
-        if c != 0:
-            count = bdd.expand_monomial(n, d, k-len(p))
-            #print("c={} d={}\t{}".format(c, d, count))
-            if len(count) > bottom:
-                r += c*count[bottom]
-    return r
 ##########################
 def unrank_profile(rank,  n, nb_vars):
     r = rank
-    p =()
-    for k in range(nb_vars):
-        top = sum(p)
-        bottom = n - top
-        for m in range(1 +min(top+1, bottom-ceil(sqrt(bottom)))):
-            Delta = complete_profile(p+(m,), n, nb_vars)
-            if r - Delta  < 0 :
-                p = p +(m,)
+    p, P =(), (0,1)
+    T, L = 0, 0
+    while (T < n-2):
+        m = 0
+        while True:
+            Q = iter(m, P)
+            Delta = 0
+            for d, c in enumerate(Q):
+                Ru = bdd.expand_monomial(n, d, nb_vars-L-1)
+                if len(Ru) > n-T-m:
+                    Delta += c*Ru[n-T-m]
+            if r - Delta < 0:
+                p, P = p +(m,), Q
+                T += m
+                L += 1
                 break
             r -= Delta
+            m += 1
+    p = p+ (0,)*(nb_vars-len(p))
     return r, p
-########################
 ########################################
 def calc(p, m):
     """
@@ -480,8 +472,7 @@ if __name__ == '__main__':
     print("#maximum size ({} vars): {}".format(nb_vars, bdd.max_size(nb_vars)))
     bdd.init(n, nb_vars)
     start = timer()
-    total = bdd.expand_monomial(n, 1, nb_vars)
-    total = sum(total)
+    total = bdd.expand_monomial(n, 1, nb_vars)[n]
     print("# precomputation step: {} s".format(timer()-start))
     print("#BDDs = {}, size {} with {} vars".format(total, n, nb_vars))
     if total == 0:
@@ -491,7 +482,9 @@ if __name__ == '__main__':
         r = random.randint(0, total-1) # 0<= r <= total-1
     print("#********* rank = {} **************".format(r))
     print("# r={} / {}".format(r, total))
-    assert(r<total)
+    if r >= total:
+        print("rank too big: {} > {}".format(r, total))
+        exit("-1")
     L = unrank_bdd(r, n, nb_vars)
     if dot:
         print("{}".format(to_dot(L, nb_vars, max_level)))
